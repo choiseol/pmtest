@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PM 유형 테스트</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="description" content="8문항으로 간단히 확인하는 PM 업무 스타일 테스트" />
+  <style>
+    @media print{ .no-print{display:none!important} body{background:#fff!important} }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-slate-50 to-white text-slate-900" style="padding-bottom: env(safe-area-inset-bottom);">
+  <main class="max-w-3xl mx-auto px-4 py-10">
+    <header class="mb-6">
+      <h1 class="text-3xl md:text-4xl font-semibold tracking-tight">PM 유형 테스트</h1>
+      <p class="mt-2 text-slate-600">나는 어떤 PM일까? PM 업무 스타일 알아보기</p>
+    </header>
+
+    <!-- 닉네임 입력 -->
+    <section id="nicknameSection" class="mb-6" style="padding-bottom: 6em;">
+      <label for="nicknameInput" class="block mb-2 font-medium">닉네임을 입력해주세요👇</label>
+      <input id="nicknameInput" type="text" placeholder="예: 쥴라이, 데이빗, 아스티" class="w-full border border-slate-300 rounded-xl p-3" />
+      <button id="startBtn" class="mt-3 px-4 py-2 rounded-xl bg-slate-900 text-white">테스트 시작하기</button>
+      <p class="mt-2 text-xs text-slate-500">※ 결과 공유 링크에 닉네임이 포함됩니다.</p>
+    </section>
+
+    <!-- 설문 영역 -->
+    <section id="quizSection" class="hidden">
+      <div class="mb-2 flex items-center justify-between text-sm text-slate-600">
+        <span>진행률</span>
+        <span id="progressText">0%</span>
+      </div>
+      <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden mb-4">
+        <div id="progressBar" class="h-full bg-slate-900 w-0"></div>
+      </div>
+      <div id="quiz" class="space-y-5" style="padding-bottom: 10em;"></div>
+      <button id="submitBtn" class="mt-6 px-4 py-2 rounded-xl bg-slate-900 text-white disabled:opacity-40" disabled>결과 보기</button>
+    </section>
+
+    <!-- 결과 영역 -->
+    <section id="resultSection" class="mt-8 hidden">
+      <div class="rounded-2xl border border-slate-200 bg-white p-5 print:shadow-none print:border">
+        <div id="nicknameDisplay" class="text-lg font-medium mb-2"></div>
+        <div class="flex flex-wrap items-baseline gap-3">
+          <div id="resultCode" class="text-3xl font-semibold tracking-tight">—</div>
+          <div id="resultName" class="text-xl font-medium">—</div>
+        </div>
+        <p id="resultDesc" class="mt-2 text-slate-700">—</p>
+
+        <!-- 결과 썸네일 -->
+        <img id="resultImg"
+             class="mt-4 w-full rounded-xl border border-slate-200 bg-slate-50 object-cover aspect-[5/5] hidden"
+             alt="유형 대표 이미지" loading="lazy" />
+
+        <!-- 캐치프레이즈 & 함께 일하면 -->
+        <div class="mt-4 grid md:grid-cols-2 gap-4">
+          <div class="rounded-xl border border-slate-200 p-4">
+            <div class="text-sm font-medium">한 마디로</div>
+            <p id="resultTagline" class="mt-2 text-slate-700">—</p>
+          </div>
+          <div class="rounded-xl border border-slate-200 p-4">
+            <div class="text-sm font-medium">동료는 나를</div>
+            <p id="resultWorkWith" class="mt-2 text-slate-700">—</p>
+          </div>
+        </div>
+
+        <!-- 강점 / 주의 포인트 -->
+        <div class="mt-4 grid md:grid-cols-2 gap-4">
+          <div class="rounded-xl border border-slate-200 p-4">
+            <div class="text-sm font-medium">장점</div>
+            <ul id="resultStrength" class="mt-2 list-disc list-inside text-slate-700 space-y-1"></ul>
+          </div>
+          <div class="rounded-xl border border-slate-200 p-4">
+            <div class="text-sm font-medium">주의 포인트</div>
+            <p id="resultWeakness" class="mt-2 text-slate-700">—</p>
+          </div>
+        </div>
+
+        <div class="mt-4 flex flex-wrap gap-2 no-print">
+          <button id="againBtn" class="px-3 py-2 rounded-lg border border-slate-300">다시 하기</button>
+          <button id="shareBtn" class="px-3 py-2 rounded-lg border border-slate-300">링크 공유</button>
+          <button id="copyBtn" class="px-3 py-2 rounded-lg border border-slate-300">결과 복사</button>
+        </div>
+      </div>
+
+      <!-- 축별 결과 -->
+      <div class="mt-4 rounded-2xl border border-dashed border-slate-200 p-5 bg-slate-50">
+        <div class="text-sm font-medium">항목별 결과</div>
+        <div class="mt-2 grid grid-cols-2 md:grid-cols-4 gap-3 text-slate-700">
+          <div class="rounded-xl bg-white border border-slate-200 p-3"><div class="text-xs text-slate-500">의사결정</div><div class="mt-1" id="axisDI">-</div></div>
+          <div class="rounded-xl bg-white border border-slate-200 p-3"><div class="text-xs text-slate-500">실행 속도</div><div class="mt-1" id="axisFT">-</div></div>
+          <div class="rounded-xl bg-white border border-slate-200 p-3"><div class="text-xs text-slate-500">협업 스타일</div><div class="mt-1" id="axisCD">-</div></div>
+          <div class="rounded-xl bg-white border border-slate-200 p-3"><div class="text-xs text-slate-500">관점</div><div class="mt-1" id="axisUB">-</div></div>
+        </div>
+        <p class="mt-2 text-xs text-slate-500">* 동률일 때는 첫 문항(Q1/Q3/Q5/Q7)의 선택을 따릅니다.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- 하단 고정 바: 시작 -->
+  <div id="startBar" class="no-print fixed inset-x-0 bottom-0 z-50 hidden">
+    <div class="max-w-3xl mx-auto px-4 pt-3 pb-[max(16px,env(safe-area-inset-bottom))]">
+      <div class="rounded-2xl bg-white/90 backdrop-blur border border-slate-200 shadow-lg p-3">
+        <button id="startBtnFixed" class="w-full h-14 rounded-xl bg-slate-900 text-white text-lg font-semibold">
+          테스트 시작하기
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 하단 고정 바: 제출 -->
+  <div id="submitBar" class="no-print fixed inset-x-0 bottom-0 z-50 hidden">
+    <div class="max-w-3xl mx-auto px-4 pt-3 pb-[max(16px,env(safe-area-inset-bottom))]">
+      <div class="rounded-2xl bg-white/90 backdrop-blur border border-slate-200 shadow-lg p-3">
+        <div class="mb-2 flex items-center justify-between text-sm text-slate-600">
+          <span>진행률</span>
+          <span id="progressTextFixed">0%</span>
+        </div>
+        <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden mb-3">
+          <div id="progressBarFixed" class="h-full bg-slate-900 w-0"></div>
+        </div>
+        <button id="submitBtnFixed" class="w-full h-14 rounded-xl bg-slate-900 text-white text-lg font-semibold disabled:opacity-40" disabled>
+          결과 보기
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== DOM =====
+    const nicknameSection = document.getElementById('nicknameSection');
+    const quizSection     = document.getElementById('quizSection');
+    const resultSection   = document.getElementById('resultSection');
+
+    const nicknameInput   = document.getElementById('nicknameInput');
+    const nicknameDisplay = document.getElementById('nicknameDisplay');
+    const startBtn        = document.getElementById('startBtn');
+
+    const quizEl       = document.getElementById('quiz');
+    const progressText = document.getElementById('progressText');
+    const progressBar  = document.getElementById('progressBar');
+
+    const submitBtn      = document.getElementById('submitBtn');
+    const resultCode     = document.getElementById('resultCode');
+    const resultName     = document.getElementById('resultName');
+    const resultDesc     = document.getElementById('resultDesc');
+    const resultTagline  = document.getElementById('resultTagline');
+    const resultWorkWith = document.getElementById('resultWorkWith');
+    const resultStrength = document.getElementById('resultStrength');
+    const resultWeakness = document.getElementById('resultWeakness');
+
+    const axisDI = document.getElementById('axisDI');
+    const axisFT = document.getElementById('axisFT');
+    const axisCD = document.getElementById('axisCD');
+    const axisUB = document.getElementById('axisUB');
+
+    const againBtn = document.getElementById('againBtn');
+    const shareBtn = document.getElementById('shareBtn');
+    const copyBtn  = document.getElementById('copyBtn');
+
+    // 하단 고정 바
+    const startBar  = document.getElementById('startBar');
+    const submitBar = document.getElementById('submitBar');
+    const startBtnFixed  = document.getElementById('startBtnFixed');
+    const submitBtnFixed = document.getElementById('submitBtnFixed');
+    const progressTextFixed = document.getElementById('progressTextFixed');
+    const progressBarFixed  = document.getElementById('progressBarFixed');
+
+    // 결과 이미지
+    const resultImg = document.getElementById('resultImg');
+
+    // ===== Data =====
+    const QUESTIONS = [
+      { id: 'Q1', axis: 'DI', title: '새로운 기능 출시 여부를 정할 때 나는', options: [
+        { key: 'D', label: '데이터와 시장 조사를 먼저 한다' },
+        { key: 'I', label: '직관적으로 가설을 세우고 실행해본다' },
+      ]},
+      { id: 'Q2', axis: 'DI', title: '문제가 생기면 나는', options: [
+        { key: 'D', label: '원인 데이터를 분석하고 해결책을 찾는다' },
+        { key: 'I', label: '사용자 피드백을 확인한다' },
+      ]},
+      { id: 'Q3', axis: 'FT', title: '새로운 아이디어가 생기면 나는', options: [
+        { key: 'F', label: 'MVP라도 빨리 만들어본다' },
+        { key: 'T', label: '리스크를 줄이기 위해 충분히 검토한다' },
+      ]},
+      { id: 'Q4', axis: 'FT', title: '일정이 빡빡할 때 나는', options: [
+        { key: 'F', label: '가능한 부분부터 빠르게 시도한다' },
+        { key: 'T', label: '범위를 줄이고 품질을 보장한다' },
+      ]},
+      { id: 'Q5', axis: 'CD', title: '의견 충돌 시 나는', options: [
+        { key: 'C', label: '시간이 걸리더라도 조율하며 합의점을 찾는다' },
+        { key: 'D', label: '목표 달성을 위해 밀고 나간다' },
+      ]},
+      { id: 'Q6', axis: 'CD', title: '회의에서 나는', options: [
+        { key: 'C', label: '모두가 납득할 수 있게 요목조목 정리한다' },
+        { key: 'D', label: '큰 틀에서 결론을 빨리 내고 실행으로 옮긴다' },
+      ]},
+      { id: 'Q7', axis: 'UB', title: '기획 시 나는', options: [
+        { key: 'U', label: '사용자 경험을 최우선으로 한다' },
+        { key: 'B', label: '사업적 임팩트를 최우선으로 한다' },
+      ]},
+      { id: 'Q8', axis: 'UB', title: '리소스가 부족할 때 나는', options: [
+        { key: 'U', label: '유저의 불편함을 먼저 해소한다' },
+        { key: 'B', label: '기대 매출이 큰 걸 먼저 진행한다' },
+      ]},
+    ];
+
+    // 이름/설명/캐치프레이즈/함께 일하면/장점3/단점1
+    const TYPE_MAP = {
+      DFCU:{name:'실험가형 PM',desc:'데이터는 내 나침반, 실험은 내 언어. 오늘도 가설을 세우고 유저 마음을 해킹한다.',tagline:'“실험 없인 못 사는 사람.”',workWith:'하루라도 A/B 테스트 안 하면 금단증상.',strength:['데이터에 카페인처럼 취한다.','실패 로그도 다음 실험의 밑거름으로 삼는다.','“가설 세우기”는 하루의 루틴이다.'],weakness:'실험이 끝나야 퇴근한다. (실험이 목적이 될 때가 있음)'},
+      DFCB:{name:'성장 드라이버형 PM',desc:'스피드와 데이터가 내 연료. 빠르게 달려서 지표를 뚫는다.',tagline:'“지표는 내 심박수.”',workWith:'항상 KPI를 눈으로 보는 느낌.',strength:['지표를 보면 심박수가 오른다.','속도와 실행력으로 팀의 RPM을 높인다.','KPI를 인생의 퀘스트처럼 관리한다.'],weakness:'숫자만 쫓다 보면 유저의 얼굴이 흐릿해질 때가 있다.'},
+      DFDU:{name:'퍼널 해커형 PM',desc:'드라이브 강한 퍼포먼스 괴물. 전환율 떨어지면 밤새 SQL 켠다.',tagline:'“전환율이 떨어지면 잠이 안 옴.”',workWith:'모든 버튼 클릭률이 머릿속에 저장되어 있음.',strength:['전환율 그래프가 오르면 세상 다 가진 기분이다.','퍼널 데이터를 보면 어디서 막혔는지 감으로 안다.','“빠르게 테스트, 더 빠르게 수정”이 좌우명이다.'],weakness:'퍼널 밖 세상(브랜드, 감정, 맥락)은 다소 무심할 수 있다.'},
+      DFDB:{name:'스케일러형 PM',desc:'“임팩트 없는 일은 죄악.” 지표 중심으로 시장을 확장한다.',tagline:'“임팩트 없는 일은 죄악이다.”',workWith:'단기 성과 확실, 팀의 속도가 빨라짐.',strength:['작은 개선도 대형 임팩트로 확장시킨다.','리소스 배분의 타짜다.','성장 그래프를 예술처럼 다룬다.'],weakness:'디테일보다 큰 그림에 빠져 UX가 스쳐 지나갈 때가 있다.'},
+      DTCU:{name:'정밀 설계자형 PM',desc:'“빨리보다 바르게.” 모든 플로우를 프레임 단위로 점검한다.',tagline:'“빠르진 않아도 완벽하니까.”',workWith:'릴리즈 전 QA에서도 안정감을 주는 타입.',strength:['버튼 하나도 논리로 설명할 수 있다.','QA 탭을 닫지 못하는 완벽주의자.','“버그 없는 세상”을 진심으로 꿈꾼다.'],weakness:'‘완벽’이 완성보다 중요해질 때가 있다.'},
+      DTCB:{name:'안정 성장형 PM',desc:'단단하고 느리게, 그러나 꾸준히. KPI는 오르고 리스크는 내려간다.',tagline:'“느려도 꾸준히 오른다.”',workWith:'리스크 관리의 대가.',strength:['한 번 세운 플랜은 폭풍 속에서도 흔들리지 않는다.','리스크 감지 센서가 탑재되어 있다.','불 꺼진 사무실의 마지막 빛처럼 안정감을 준다.'],weakness:'변화를 느리게 받아들여, 기회가 스쳐지나갈 때가 있다.'},
+      DTDU:{name:'최적화 마스터형 PM',desc:'픽셀 하나에도 이유가 있다. UX 성능을 극대화한다.',tagline:'“픽셀 하나에도 이유가 있다.”',workWith:'QA 리스트의 끝판왕.',strength:['픽셀 어긋남도 눈으로 잡아낸다.','데이터 튜닝에선 F1 레이서급 손놀림.','UX는 그에게 과학이다.'],weakness:'최적화에 몰입하다보면 ‘출시’ 버튼이 멀어진다.'},
+      DTDB:{name:'전략 설계자형 PM',desc:'큰 그림 속 디테일 장인. 로드맵과 정렬을 설계한다.',tagline:'“모든 건 로드맵 안에서 움직인다.”',workWith:'조직 정렬을 이끄는 중심축.',strength:['화이트보드만 보면 자동으로 프레임워크를 그린다.','3개월 뒤 문제를 미리 예측한다.','계획표 안에서 모든 걸 정렬시킨다.'],weakness:'실행 속도는 프레임워크 속도로 제한될 때가 있다.'},
+      IFCU:{name:'크리에이터형 PM',desc:'“재밌겠다!”에서 시작해 실제로 만든다.',tagline:'“아이디어는 쏟아지고, 코드보다 빠르다.”',workWith:'“그냥 재미로 해볼까?”가 진짜로 배포된다.',strength:['“이거 재밌을 것 같은데?” 한마디로 팀이 움직인다.','아이디어를 말이 아니라 결과물로 보여준다.','영감이 들면 새벽에도 Figma를 켠다.'],weakness:'영감은 빠르지만, 리소스는 한정적이다.'},
+      IFCB:{name:'비즈니스 촉발자형 PM',desc:'“이거 돈 냄새 나지 않아?” 직감으로 기회를 잡는다.',tagline:'“이거 돈 냄새 나지 않아?”',workWith:'회의 10분 만에 투자자료 아웃라인이 생긴다.',strength:['“그거 돈 되겠는데?”嗅각이 예리하다.','모멘텀을 만드는 데 천재적이다.','회의가 끝나기도 전에 다음 액션이 나온다.'],weakness:'큰 베팅을 즐기다 가끔 판이 터질 때가 있다.'},
+      IFDU:{name:'비전 제시자형 PM',desc:'비전 하나로 팀을 몰입시킨다.',tagline:'“큰 그림 그리고 팀을 몰입시키는 사람.”',workWith:'미팅 후엔 괜히 열정이 차오른다.',strength:['팀의 방향을 ‘왜’로 설명할 줄 안다.','비전을 말할 때, 슬라이드보다 눈빛이 먼저 빛난다.','불확실성 속에서도 모두를 설득한다.'],weakness:'구체적인 실행보다 ‘큰 그림’에 오래 머문다.'},
+      IFDB:{name:'게임체인저형 PM',desc:'기존 규칙을 뒤집는 플레이메이커.',tagline:'“판을 갈아엎는 게 내 취미.”',workWith:'PPT엔 늘 새로운 룰과 큰 베팅이 등장.',strength:['“이건 판을 갈아야 해”라는 말이 진심이다.','위기 속에서도 반전의 서사를 만든다.','혁신을 엔진 삼아 전진한다.'],weakness:'리스크를 예술처럼 다루다 팀이 과열될 때가 있다.'},
+      ITCU:{name:'사용자 옹호자형 PM',desc:'“유저는 뭐라 느낄까?” 하루에도 열 번 묻는다.',tagline:'“유저가 내 보스.”',workWith:'“유저 입장에서는…”을 하루 세 번 듣는다.',strength:['유저의 불편을 자기 일처럼 느낀다.','리뷰 한 줄에서도 인사이트를 캐낸다.','“유저 입장에서는”으로 모든 회의를 시작한다.'],weakness:'유저 감정에 과몰입해 냉정한 판단이 흐려질 때가 있다.'},
+      ITCB:{name:'균형 중재자형 PM',desc:'데이터와 직관, 유저와 비즈니스 사이의 평화 유지자.',tagline:'“극단 사이의 평화협정 체결자.”',workWith:'회의가 과열되면 “잠깐만요” 하고 균형을 세운다.',strength:['논리와 감정, 유저와 비즈니스 사이의 평화유지군.','팀의 온도를 36.5도로 유지한다.','누가 싸워도 “잠깐만요” 한마디로 정리된다.'],weakness:'모두를 만족시키려다 자기 의견이 옅어질 수 있다.'},
+      ITDU:{name:'장인형 PM',desc:'완성도가 곧 존재 이유. 결과물로 말한다.',tagline:'“완성도가 곧 나의 존재 이유.”',workWith:'Figma 픽셀 정렬에 집착하는 이유를 알게 된다.',strength:['결과물이 말하게 만든다.','디테일에선 완벽주의가 아니라 예술가다.','품질을 위해서라면 야근도 불평 없다.'],weakness:'타임라인은 그의 적이다.'},
+      ITDB:{name:'통찰 전략가형 PM',desc:'직관에 논리를 더해 기회를 설계한다.',tagline:'“직감에 논리를 더한다.”',workWith:'한 문장 듣고 “그건 구조적으로 안 맞아요”가 튀어나온다.',strength:['한 문장만 들어도 구조를 파악한다.','복잡한 문제를 단순하게 재설계한다.','직감과 논리가 기가 막히게 합쳐진다.'],weakness:'분석하다가 타이밍을 놓칠 때가 있다.'}
+    };
+
+    const AXIS_ORDER = ['DI','FT','CD','UB'];
+    const TIEBREAKER = { DI:'Q1', FT:'Q3', CD:'Q5', UB:'Q7' };
+
+    // ===== State =====
+    let answers = {};
+
+    // ===== Helpers =====
+    const qs = (k) => new URL(location.href).searchParams.get(k);
+
+    function renderQuestions(){
+      quizEl.innerHTML = '';
+      QUESTIONS.forEach((q, i) => {
+        const div = document.createElement('div');
+        div.className = 'rounded-xl border p-4 bg-white';
+        const t = document.createElement('div');
+        t.className = 'font-medium mb-2';
+        t.textContent = `${i+1}. ${q.title}`;
+        div.appendChild(t);
+
+        q.options.forEach(opt => {
+          const b = document.createElement('button');
+          b.className = 'block w-full text-left border rounded-lg p-3 mb-2 transition hover:bg-slate-50 ' +
+                        (answers[q.id]===opt.key ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-200');
+          b.textContent = opt.label;
+          b.onclick = () => {
+            answers[q.id] = opt.key;
+            updateProgress();
+            renderQuestions();
+          };
+          div.appendChild(b);
+        });
+        quizEl.appendChild(div);
+      });
+    }
+
+    function updateProgress(){
+      const pct = Math.round(Object.keys(answers).length / QUESTIONS.length * 100);
+      progressText.textContent = pct + '%';
+      progressBar.style.width  = pct + '%';
+      submitBtn.disabled = Object.keys(answers).length !== QUESTIONS.length;
+
+      // fixed bar 동기화
+      progressTextFixed.textContent = pct + '%';
+      progressBarFixed.style.width  = pct + '%';
+      submitBtnFixed.disabled = submitBtn.disabled;
+    }
+
+    function computeAxis(){
+      const groups = {
+        DI: { keys:['Q1','Q2'], values:['D','I'] },
+        FT: { keys:['Q3','Q4'], values:['F','T'] },
+        CD: { keys:['Q5','Q6'], values:['C','D'] },
+        UB: { keys:['Q7','Q8'], values:['U','B'] },
+      };
+      const res = {};
+      for (const axis of AXIS_ORDER){
+        const {keys, values} = groups[axis];
+        const a = values[0], b = values[1];
+        const first = answers[keys[0]], second = answers[keys[1]];
+        const ac = (first===a) + (second===a);
+        const bc = (first===b) + (second===b);
+        res[axis] = (ac===bc) ? (answers[TIEBREAKER[axis]]||'') : (ac>bc ? a : b);
+      }
+      return res;
+    }
+
+    function showStartBar() {
+      startBar.classList.remove('hidden');
+      submitBar.classList.add('hidden');
+    }
+    function showSubmitBar() {
+      startBar.classList.add('hidden');
+      submitBar.classList.remove('hidden');
+    }
+    function hideAllBars() {
+      startBar.classList.add('hidden');
+      submitBar.classList.add('hidden');
+    }
+
+    // 이미지 존재 확인 후 세팅
+    function canLoad(src) {
+      return new Promise(resolve => {
+        const img = new Image();
+        img.onload = () => resolve(true);
+        img.onerror = () => resolve(false);
+        img.src = src + (src.includes('?') ? '&' : '?') + `v=${Date.now()}`; // 캐시 회피
+      });
+    }
+    async function setTypeImage(code) {
+      if (!code) { resultImg.classList.add('hidden'); return; }
+      const exts = ['webp','png','jpg','jpeg','gif'];
+      for (const ext of exts) {
+        const url = `imgs/${code}.${ext}`;
+        if (await canLoad(url)) {
+          resultImg.src = url;
+          resultImg.alt = `${code} 유형 이미지`;
+          resultImg.classList.remove('hidden');
+          return;
+        }
+      }
+      resultImg.classList.add('hidden');
+    }
+
+    // === Google Sheet 전송 함수 ===
+  async function sendResultToSheet(nickname, code, axisObj) {
+    try {
+      await fetch('https://script.google.com/macros/s/AKfycbxSTRPDb4iVLnqoYlok66-NUJebc2EsyGPp0mWi3wYAWTu8-tgS67rEZ9Ymv3bMlb_c2A/exec', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nickname,
+          code,
+          name: TYPE_MAP[code]?.name || '',
+          axis: axisObj
+        })
+      });
+    } catch (e) {
+      console.error('전송 실패:', e);
+    }
+  }
+
+  // === showResult 함수 ===
+  async function showResult(code, nickname, axisObj) {
+    const t = TYPE_MAP[code] || {
+      name: '미정',
+      desc: '유형을 찾을 수 없습니다.',
+      tagline: '',
+      workWith: '',
+      strength: [],
+      weakness: ''
+    };
+
+    // 기본 정보 표시
+    nicknameDisplay.textContent = `${nickname}님은 ${t.name}!`;
+    resultCode.textContent = code;
+    resultName.textContent = t.name;
+    resultDesc.textContent = t.desc;
+    resultTagline.textContent = t.tagline || '—';
+    resultWorkWith.textContent = t.workWith || '—';
+    resultStrength.innerHTML = (t.strength || []).map(s => `<li>${s}</li>`).join('');
+    resultWeakness.textContent = t.weakness || '—';
+
+    // 축별 표시
+    if (axisObj) {
+      axisDI.textContent = axisObj.DI || '-';
+      axisFT.textContent = axisObj.FT || '-';
+      axisCD.textContent = axisObj.CD || '-';
+      axisUB.textContent = axisObj.UB || '-';
+    }
+
+    // 유형 이미지 로딩
+    await setTypeImage(code);
+
+    // 결과 화면 전환
+    quizSection.classList.add('hidden');
+    resultSection.classList.remove('hidden');
+    hideAllBars(); // 결과 화면에서는 바 숨김
+
+    // URL 딥링크 반영
+    const url = new URL(location.href);
+    url.searchParams.set('name', nickname);
+    url.searchParams.set('code', code);
+    history.replaceState(null, '', url.toString());
+
+    // === Google Sheet에 결과 저장 ===
+    await sendResultToSheet(nickname, code, axisObj);
+  }
+
+
+    function resetAll(){
+      answers = {};
+      const url = new URL(location.href);
+      url.searchParams.delete('code'); url.searchParams.delete('name');
+      history.replaceState(null, '', url.toString());
+      resultSection.classList.add('hidden');
+      quizSection.classList.add('hidden');
+      nicknameSection.classList.remove('hidden');
+      nicknameInput.focus();
+      updateProgress();
+      showStartBar();
+      resultImg.classList.add('hidden');
+      resultImg.removeAttribute('src');
+    }
+
+    // ===== Init (딥링크 지원) =====
+    (async function init(){
+      // 인라인 버튼은 화면에서 감춤 (기능/접근성은 유지)
+      startBtn.classList.add('hidden');
+      submitBtn.classList.add('hidden');
+
+      const nameFromURL = qs('name');
+      if (nameFromURL) nicknameInput.value = nameFromURL;
+      nicknameInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') startBtn.click(); });
+
+      const codeFromURL = qs('code');
+      if (nameFromURL && codeFromURL && TYPE_MAP[codeFromURL]) {
+        nicknameSection.classList.add('hidden');
+        await showResult(codeFromURL, nameFromURL, null);
+        hideAllBars();
+      } else {
+        showStartBar(); // 기본: 시작 바 노출
+      }
+    })();
+
+    // ===== Events =====
+    startBtn.onclick = () => {
+      const nick = (nicknameInput.value || '').trim();
+      if(!nick){ alert('닉네임을 입력해주세요!'); nicknameInput.focus(); return; }
+      nicknameSection.classList.add('hidden');
+      quizSection.classList.remove('hidden');
+      renderQuestions();
+      updateProgress();
+      showSubmitBar(); // 퀴즈 시작하면 제출 고정바
+      window.scrollTo({ top: quizSection.offsetTop - 8, behavior: 'smooth' });
+    };
+
+    // fixed 버튼은 기존 로직 재사용
+    startBtnFixed.onclick  = () => startBtn.click();
+
+    submitBtn.onclick = async () => {
+      if (submitBtn.disabled) return;
+      const axis = computeAxis();
+      const code = AXIS_ORDER.map(k => axis[k] || '-').join('');
+      const nick = (nicknameInput.value || '').trim();
+      await showResult(code, nick, axis);
+      window.scrollTo({ top: resultSection.offsetTop - 8, behavior: 'smooth' });
+    };
+    submitBtnFixed.onclick = () => submitBtn.click();
+
+    againBtn.onclick = () => resetAll();
+
+    shareBtn.onclick = async () => {
+      const url = new URL(location.href).toString();
+      try {
+        if (navigator.share) {
+          await navigator.share({ title: 'PM 유형 테스트', text: `${resultCode.textContent} - ${resultName.textContent}`, url });
+        } else {
+          await navigator.clipboard.writeText(url);
+          alert('링크를 복사했습니다!');
+        }
+      } catch {}
+    };
+
+    copyBtn.onclick = async () => {
+      const text = [
+        `내 PM 유형: ${resultCode.textContent} – ${resultName.textContent}`,
+        resultDesc.textContent,
+        resultTagline.textContent ? `한 마디로: ${resultTagline.textContent}` : '',
+        resultWorkWith.textContent ? `동료는 나를: ${resultWorkWith.textContent}` : '',
+        '장점: ' + Array.from(resultStrength.querySelectorAll('li')).map(li=>li.textContent).join(' / '),
+        '주의: ' + resultWeakness.textContent
+      ].filter(Boolean).join('\n');
+      try {
+        await navigator.clipboard.writeText(text);
+        alert('결과를 복사했습니다.');
+      } catch {
+        alert('복사 실패. 텍스트를 직접 선택해 복사해주세요.');
+      }
+    };
+  </script>
+</body>
+</html>
