@@ -355,7 +355,7 @@
     try {
       // 4. GET 요청으로 fetch 호출
       // GET은 method와 body를 명시할 필요가 없습니다. (기본값이 GET)
-      await fetch(finalUrl); 
+      await fetch(finalUrl, { method: 'GET' }); 
       
       console.log('전송 성공 (GET)');
     } catch (e) {
