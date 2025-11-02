@@ -329,19 +329,35 @@
       resultImg.classList.add('hidden');
     }
 
-    // === Google Sheet 전송 함수 ===
+  // === Google Sheet 전송 함수 (GET 요청) ===
   async function sendResultToSheet(nickname, code, axisObj) {
+    // 1. URL과 쿼리 매개변수를 담을 객체 정의
+    const params = {
+      nickname: nickname,
+      code: code,
+      // TYPE_MAP은 함수 외부에 정의되어 있다고 가정합니다.
+      name: TYPE_MAP[code]?.name || '', 
+      // axisObj의 속성들을 평탄화하여 쿼리 매개변수에 직접 추가합니다.
+      DI: axisObj?.DI || '',
+      FT: axisObj?.FT || '',
+      CD: axisObj?.CD || '',
+      UB: axisObj?.UB || ''
+    };
+
+    // 2. 쿼리 매개변수 문자열 생성 (예: ?nickname=...&code=...)
+    // URLSearchParams를 사용하여 안전하게 인코딩합니다.
+    const queryString = new URLSearchParams(params).toString();
+    
+    // 3. 최종 엔드포인트 URL 생성
+    const baseUrl = 'https://script.google.com/macros/s/AKfycbxSTRPDb4iVLnqoYlok66-NUJebc2EsyGPp0mWi3wYAWTu8-tgS67rEZ9Ymv3bMlb_c2A/exec';
+    const finalUrl = `${baseUrl}?${queryString}`;
+
     try {
-      await fetch('https://script.google.com/macros/s/AKfycbxSTRPDb4iVLnqoYlok66-NUJebc2EsyGPp0mWi3wYAWTu8-tgS67rEZ9Ymv3bMlb_c2A/exec', {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify({
-          nickname,
-          code,
-          name: TYPE_MAP[code]?.name || '',
-          axis: axisObj
-        })
-      });
+      // 4. GET 요청으로 fetch 호출
+      // GET은 method와 body를 명시할 필요가 없습니다. (기본값이 GET)
+      await fetch(finalUrl); 
+      
+      console.log('전송 성공 (GET)');
     } catch (e) {
       console.error('전송 실패:', e);
     }
