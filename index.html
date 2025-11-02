@@ -217,7 +217,7 @@
       DTDU:{name:'최적화 마스터형 PM',desc:'픽셀 하나에도 이유가 있다. UX 성능을 극대화한다.',tagline:'“픽셀 하나에도 이유가 있다.”',workWith:'QA 리스트의 끝판왕.',strength:['픽셀 어긋남도 눈으로 잡아낸다.','데이터 튜닝에선 F1 레이서급 손놀림.','UX는 그에게 과학이다.'],weakness:'최적화에 몰입하다보면 ‘출시’ 버튼이 멀어진다.'},
       DTDB:{name:'전략 설계자형 PM',desc:'큰 그림 속 디테일 장인. 로드맵과 정렬을 설계한다.',tagline:'“모든 건 로드맵 안에서 움직인다.”',workWith:'조직 정렬을 이끄는 중심축.',strength:['화이트보드만 보면 자동으로 프레임워크를 그린다.','3개월 뒤 문제를 미리 예측한다.','계획표 안에서 모든 걸 정렬시킨다.'],weakness:'실행 속도는 프레임워크 속도로 제한될 때가 있다.'},
       IFCU:{name:'크리에이터형 PM',desc:'“재밌겠다!”에서 시작해 실제로 만든다.',tagline:'“아이디어는 쏟아지고, 코드보다 빠르다.”',workWith:'“그냥 재미로 해볼까?”가 진짜로 배포된다.',strength:['“이거 재밌을 것 같은데?” 한마디로 팀이 움직인다.','아이디어를 말이 아니라 결과물로 보여준다.','영감이 들면 새벽에도 Figma를 켠다.'],weakness:'영감은 빠르지만, 리소스는 한정적이다.'},
-      IFCB:{name:'비즈니스 촉발자형 PM',desc:'“이거 돈 냄새 나지 않아?” 직감으로 기회를 잡는다.',tagline:'“이거 돈 냄새 나지 않아?”',workWith:'회의 10분 만에 투자자료 아웃라인이 생긴다.',strength:['“그거 돈 되겠는데?”嗅각이 예리하다.','모멘텀을 만드는 데 천재적이다.','회의가 끝나기도 전에 다음 액션이 나온다.'],weakness:'큰 베팅을 즐기다 가끔 판이 터질 때가 있다.'},
+      IFCB:{name:'비즈니스 촉발자형 PM',desc:'“이거 돈 냄새 나지 않아?” 직감으로 기회를 잡는다.',tagline:'“이거 돈 냄새 나지 않아?”',workWith:'회의 10분 만에 투자자료 아웃라인이 생긴다.',strength:['“그거 돈 되겠는데?”후각이 예리하다.','모멘텀을 만드는 데 천재적이다.','회의가 끝나기도 전에 다음 액션이 나온다.'],weakness:'큰 베팅을 즐기다 가끔 판이 터질 때가 있다.'},
       IFDU:{name:'비전 제시자형 PM',desc:'비전 하나로 팀을 몰입시킨다.',tagline:'“큰 그림 그리고 팀을 몰입시키는 사람.”',workWith:'미팅 후엔 괜히 열정이 차오른다.',strength:['팀의 방향을 ‘왜’로 설명할 줄 안다.','비전을 말할 때, 슬라이드보다 눈빛이 먼저 빛난다.','불확실성 속에서도 모두를 설득한다.'],weakness:'구체적인 실행보다 ‘큰 그림’에 오래 머문다.'},
       IFDB:{name:'게임체인저형 PM',desc:'기존 규칙을 뒤집는 플레이메이커.',tagline:'“판을 갈아엎는 게 내 취미.”',workWith:'PPT엔 늘 새로운 룰과 큰 베팅이 등장.',strength:['“이건 판을 갈아야 해”라는 말이 진심이다.','위기 속에서도 반전의 서사를 만든다.','혁신을 엔진 삼아 전진한다.'],weakness:'리스크를 예술처럼 다루다 팀이 과열될 때가 있다.'},
       ITCU:{name:'사용자 옹호자형 PM',desc:'“유저는 뭐라 느낄까?” 하루에도 열 번 묻는다.',tagline:'“유저가 내 보스.”',workWith:'“유저 입장에서는…”을 하루 세 번 듣는다.',strength:['유저의 불편을 자기 일처럼 느낀다.','리뷰 한 줄에서도 인사이트를 캐낸다.','“유저 입장에서는”으로 모든 회의를 시작한다.'],weakness:'유저 감정에 과몰입해 냉정한 판단이 흐려질 때가 있다.'},
@@ -247,7 +247,7 @@
 
         q.options.forEach(opt => {
           const b = document.createElement('button');
-          b.className = 'block w-full text-left border rounded-lg p-3 mb-2 transition hover:bg-slate-50 ' +
+          b.className = 'block w-full text-left border rounded-lg p-3 mb-2 transition hover:bg-slate-300 ' +
                         (answers[q.id]===opt.key ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-200');
           b.textContent = opt.label;
           b.onclick = () => {
@@ -329,7 +329,6 @@
       resultImg.classList.add('hidden');
     }
 
-
   // === Google Sheet 전송 함수 ===
   async function sendResultToSheet(nickname, code, axisObj) {
     try {
@@ -348,7 +347,6 @@
       console.error('전송 실패:', e);
     }
   }
-
 
   // === showResult 함수 ===
   async function showResult(code, nickname, axisObj) {
