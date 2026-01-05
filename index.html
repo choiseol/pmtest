@@ -3,24 +3,25 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PM 유형 테스트</title>
+  <title>PMTI — PM 업무 스타일 테스트</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <meta name="description" content="8문항으로 간단히 확인하는 PM 업무 스타일 테스트" />
+  <meta name="description" content="PMTI: 16문항으로 확인하는 PM 업무 스타일(16유형) 테스트" />
   <style>
-    @media print{ .no-print{display:none!important} body{background:#fff!important} }
+    @media print{ .no-print{display:none!important } body{background:#fff!important } }
   </style>
 </head>
+
 <body class="min-h-screen bg-gradient-to-b from-slate-50 to-white text-slate-900" style="padding-bottom: env(safe-area-inset-bottom);">
   <main class="max-w-3xl mx-auto px-4 py-10">
     <header class="mb-6">
-      <h1 class="text-3xl md:text-4xl font-semibold tracking-tight">PM 유형 테스트</h1>
-      <p class="mt-2 text-slate-600">나는 어떤 PM일까? PM 업무 스타일 알아보기</p>
+      <h1 class="text-3xl md:text-4xl font-semibold tracking-tight">PMTI</h1>
+      <p class="mt-2 text-slate-600">Product Manager Type Indicator · 16문항으로 내 PM 업무 스타일(16유형) 확인</p>
     </header>
 
     <!-- 닉네임 입력 -->
     <section id="nicknameSection" class="mb-6" style="padding-bottom: 6em;">
       <label for="nicknameInput" class="block mb-2 font-medium">닉네임을 입력해주세요👇</label>
-      <input id="nicknameInput" type="text" placeholder="예: 쥴라이, 데이빗, 아스티" class="w-full border border-slate-300 rounded-xl p-3" />
+      <input id="nicknameInput" type="text" placeholder="예: 줄라이, 데이빗, 아스티" class="w-full border border-slate-300 rounded-xl p-3" />
       <button id="startBtn" class="mt-3 px-4 py-2 rounded-xl bg-slate-900 text-white">테스트 시작하기</button>
       <p class="mt-2 text-xs text-slate-500">※ 결과 공유 링크에 닉네임이 포함됩니다.</p>
     </section>
@@ -34,8 +35,13 @@
       <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden mb-4">
         <div id="progressBar" class="h-full bg-slate-900 w-0"></div>
       </div>
+
       <div id="quiz" class="space-y-5" style="padding-bottom: 10em;"></div>
-      <button id="submitBtn" class="mt-6 px-4 py-2 rounded-xl bg-slate-900 text-white disabled:opacity-40" disabled>결과 보기</button>
+
+      <!-- (접근성/백업용) 인라인 제출 버튼: fixed bar를 기본으로 쓰지만 기능은 유지 -->
+      <button id="submitBtn" class="mt-6 px-4 py-2 rounded-xl bg-slate-900 text-white disabled:opacity-40" disabled>
+        결과 보기
+      </button>
     </section>
 
     <!-- 결과 영역 -->
@@ -88,12 +94,20 @@
       <div class="mt-4 rounded-2xl border border-dashed border-slate-200 p-5 bg-slate-50">
         <div class="text-sm font-medium">항목별 결과</div>
         <div class="mt-2 grid grid-cols-2 md:grid-cols-4 gap-3 text-slate-700">
-          <div class="rounded-xl bg-white border border-slate-200 p-3"><div class="text-xs text-slate-500">의사결정</div><div class="mt-1" id="axisDI">-</div></div>
-          <div class="rounded-xl bg-white border border-slate-200 p-3"><div class="text-xs text-slate-500">실행 속도</div><div class="mt-1" id="axisFT">-</div></div>
-          <div class="rounded-xl bg-white border border-slate-200 p-3"><div class="text-xs text-slate-500">협업 스타일</div><div class="mt-1" id="axisCD">-</div></div>
-          <div class="rounded-xl bg-white border border-slate-200 p-3"><div class="text-xs text-slate-500">관점</div><div class="mt-1" id="axisUB">-</div></div>
+          <div class="rounded-xl bg-white border border-slate-200 p-3">
+            <div class="text-xs text-slate-500">의사결정</div><div class="mt-1" id="axisDI">-</div>
+          </div>
+          <div class="rounded-xl bg-white border border-slate-200 p-3">
+            <div class="text-xs text-slate-500">실행 스타일</div><div class="mt-1" id="axisFT">-</div>
+          </div>
+          <div class="rounded-xl bg-white border border-slate-200 p-3">
+            <div class="text-xs text-slate-500">협업/리딩</div><div class="mt-1" id="axisCD">-</div>
+          </div>
+          <div class="rounded-xl bg-white border border-slate-200 p-3">
+            <div class="text-xs text-slate-500">관점</div><div class="mt-1" id="axisUB">-</div>
+          </div>
         </div>
-        <p class="mt-2 text-xs text-slate-500">* 동률일 때는 첫 문항(Q1/Q3/Q5/Q7)의 선택을 따릅니다.</p>
+        <p class="mt-2 text-xs text-slate-500">* 동률(2:2)일 때는 각 축의 대표 문항(Q1/Q5/Q9/Q13)의 선택을 따릅니다.</p>
       </div>
     </section>
   </main>
@@ -170,43 +184,82 @@
     // 결과 이미지
     const resultImg = document.getElementById('resultImg');
 
-    // ===== Data =====
+    // ===== Data: 16 Questions =====
     const QUESTIONS = [
-      { id: 'Q1', axis: 'DI', title: '새로운 기능 출시 여부를 정할 때 나는', options: [
-        { key: 'D', label: '데이터와 시장 조사를 먼저 한다' },
-        { key: 'I', label: '직관적으로 가설을 세우고 실행해본다' },
+      // DI (Q1~Q4)
+      { id: 'Q1', axis: 'DI', title: '새로운 기능 아이디어가 나왔을 때 나는', options: [
+        { key: 'D', label: '시장·데이터·리서치를 먼저 확인한다 (D)' },
+        { key: 'I', label: '경험과 감각으로 가능성을 먼저 본다 (I)' },
       ]},
-      { id: 'Q2', axis: 'DI', title: '문제가 생기면 나는', options: [
-        { key: 'D', label: '원인 데이터를 분석하고 해결책을 찾는다' },
-        { key: 'I', label: '사용자 피드백을 확인한다' },
+      { id: 'Q2', axis: 'DI', title: '이해관계자 의견이 갈릴 때 더 설득되는 것은', options: [
+        { key: 'D', label: '수치·근거가 명확한 주장 (D)' },
+        { key: 'I', label: '맥락과 문제의식이 와닿는 주장 (I)' },
       ]},
-      { id: 'Q3', axis: 'FT', title: '새로운 아이디어가 생기면 나는', options: [
-        { key: 'F', label: 'MVP라도 빨리 만들어본다' },
-        { key: 'T', label: '리스크를 줄이기 위해 충분히 검토한다' },
+      { id: 'Q3', axis: 'DI', title: '의사결정이 늦어지고 있을 때 나는', options: [
+        { key: 'D', label: '추가 데이터를 확보해 확신을 얻고 싶다 (D)' },
+        { key: 'I', label: '불완전해도 지금 결정하는 게 낫다 (I)' },
       ]},
-      { id: 'Q4', axis: 'FT', title: '일정이 빡빡할 때 나는', options: [
-        { key: 'F', label: '가능한 부분부터 빠르게 시도한다' },
-        { key: 'T', label: '범위를 줄이고 품질을 보장한다' },
+      { id: 'Q4', axis: 'DI', title: '결정이 “맞았는지” 평가할 때 나는', options: [
+        { key: 'D', label: '지표/성과로 판단한다 (D)' },
+        { key: 'I', label: '유저 반응과 현장감으로 판단한다 (I)' },
       ]},
-      { id: 'Q5', axis: 'CD', title: '의견 충돌 시 나는', options: [
-        { key: 'C', label: '시간이 걸리더라도 조율하며 합의점을 찾는다' },
-        { key: 'D', label: '목표 달성을 위해 밀고 나간다' },
+
+      // FT (Q5~Q8)
+      { id: 'Q5', axis: 'FT', title: '아이디어가 떠오르면 나는', options: [
+        { key: 'F', label: '작게라도 빨리 만들어본다 (F)' },
+        { key: 'T', label: '설계를 충분히 한 뒤 시작한다 (T)' },
       ]},
-      { id: 'Q6', axis: 'CD', title: '회의에서 나는', options: [
-        { key: 'C', label: '모두가 납득할 수 있게 요목조목 정리한다' },
-        { key: 'D', label: '큰 틀에서 결론을 빨리 내고 실행으로 옮긴다' },
+      { id: 'Q6', axis: 'FT', title: '일정이 촉박할 때 나는', options: [
+        { key: 'F', label: '일단 출시하고 개선한다 (F)' },
+        { key: 'T', label: '범위를 줄여 완성도를 지킨다 (T)' },
       ]},
-      { id: 'Q7', axis: 'UB', title: '기획 시 나는', options: [
-        { key: 'U', label: '사용자 경험을 최우선으로 한다' },
-        { key: 'B', label: '사업적 임팩트를 최우선으로 한다' },
+      { id: 'Q7', axis: 'FT', title: '실패 가능성이 보일 때 나는', options: [
+        { key: 'F', label: '해보지 않으면 모른다고 생각한다 (F)' },
+        { key: 'T', label: '실패 확률을 낮춘 뒤 시도하고 싶다 (T)' },
       ]},
-      { id: 'Q8', axis: 'UB', title: '리소스가 부족할 때 나는', options: [
-        { key: 'U', label: '유저의 불편함을 먼저 해소한다' },
-        { key: 'B', label: '기대 매출이 큰 걸 먼저 진행한다' },
+      { id: 'Q8', axis: 'FT', title: '“좋은 기획”이란 내게', options: [
+        { key: 'F', label: '빨리 검증되고 다음으로 넘어갈 수 있는 것 (F)' },
+        { key: 'T', label: '오래 써도 흔들리지 않는 탄탄함 (T)' },
+      ]},
+
+      // CD (Q9~Q12)
+      { id: 'Q9', axis: 'CD', title: '의견 충돌이 생기면 나는', options: [
+        { key: 'C', label: '합의점을 찾고 납득을 만든다 (C)' },
+        { key: 'D', label: '방향을 정하고 밀고 나간다 (D)' },
+      ]},
+      { id: 'Q10', axis: 'CD', title: '회의에서 내 역할은 보통', options: [
+        { key: 'C', label: '논점을 정리하고 균형을 맞춘다 (C)' },
+        { key: 'D', label: '결론을 내고 액션을 만든다 (D)' },
+      ]},
+      { id: 'Q11', axis: 'CD', title: '팀 내 갈등이 생기면 나는', options: [
+        { key: 'C', label: '관계와 맥락을 먼저 고려한다 (C)' },
+        { key: 'D', label: '목표/성과에 미치는 영향을 먼저 본다 (D)' },
+      ]},
+      { id: 'Q12', axis: 'CD', title: '내가 생각하는 좋은 PM 리더십은', options: [
+        { key: 'C', label: '팀이 납득하고 함께 가게 만드는 것 (C)' },
+        { key: 'D', label: '방향을 명확히 제시하고 끌고 가는 것 (D)' },
+      ]},
+
+      // UB (Q13~Q16)
+      { id: 'Q13', axis: 'UB', title: '우선순위를 정할 때 나는', options: [
+        { key: 'U', label: '유저 불편이 큰 문제를 먼저 푼다 (U)' },
+        { key: 'B', label: '비즈니스 임팩트가 큰 일을 먼저 한다 (B)' },
+      ]},
+      { id: 'Q14', axis: 'UB', title: '성과를 설명할 때 나는', options: [
+        { key: 'U', label: '유저 경험이 어떻게 좋아졌는지 말한다 (U)' },
+        { key: 'B', label: '지표와 숫자로 설명한다 (B)' },
+      ]},
+      { id: 'Q15', axis: 'UB', title: '리소스가 제한적일 때 나는', options: [
+        { key: 'U', label: '작더라도 유저 가치가 분명한 걸 고른다 (U)' },
+        { key: 'B', label: 'ROI가 높은 선택을 한다 (B)' },
+      ]},
+      { id: 'Q16', axis: 'UB', title: '내가 가장 신경 쓰는 것은', options: [
+        { key: 'U', label: '유저가 실제로 느끼는 변화 (U)' },
+        { key: 'B', label: '조직/사업에 남기는 성과 (B)' },
       ]},
     ];
 
-    // 이름/설명/캐치프레이즈/함께 일하면/장점3/단점1
+    // ===== Type Map (기존 그대로) =====
     const TYPE_MAP = {
       DFCU:{name:'실험가형 PM',desc:'데이터는 내 나침반, 실험은 내 언어. 오늘도 가설을 세우고 유저 마음을 해킹한다.',tagline:'“실험 없인 못 사는 사람.”',workWith:'하루라도 A/B 테스트 안 하면 금단증상.',strength:['데이터에 카페인처럼 취한다.','실패 로그도 다음 실험의 밑거름으로 삼는다.','“가설 세우기”는 하루의 루틴이다.'],weakness:'실험이 끝나야 퇴근한다. (실험이 목적이 될 때가 있음)'},
       DFCB:{name:'성장 드라이버형 PM',desc:'스피드와 데이터가 내 연료. 빠르게 달려서 지표를 뚫는다.',tagline:'“지표는 내 심박수.”',workWith:'항상 KPI를 눈으로 보는 느낌.',strength:['지표를 보면 심박수가 오른다.','속도와 실행력으로 팀의 RPM을 높인다.','KPI를 인생의 퀘스트처럼 관리한다.'],weakness:'숫자만 쫓다 보면 유저의 얼굴이 흐릿해질 때가 있다.'},
@@ -226,8 +279,25 @@
       ITDB:{name:'통찰 전략가형 PM',desc:'직관에 논리를 더해 기회를 설계한다.',tagline:'“직감에 논리를 더한다.”',workWith:'한 문장 듣고 “그건 구조적으로 안 맞아요”가 튀어나온다.',strength:['한 문장만 들어도 구조를 파악한다.','복잡한 문제를 단순하게 재설계한다.','직감과 논리가 기가 막히게 합쳐진다.'],weakness:'분석하다가 타이밍을 놓칠 때가 있다.'}
     };
 
+    // ===== Scoring (16Q) =====
     const AXIS_ORDER = ['DI','FT','CD','UB'];
-    const TIEBREAKER = { DI:'Q1', FT:'Q3', CD:'Q5', UB:'Q7' };
+
+    const AXIS_QUESTIONS = {
+      DI: ['Q1','Q2','Q3','Q4'],
+      FT: ['Q5','Q6','Q7','Q8'],
+      CD: ['Q9','Q10','Q11','Q12'],
+      UB: ['Q13','Q14','Q15','Q16'],
+    };
+
+    const AXIS_VALUES = {
+      DI: ['D','I'],
+      FT: ['F','T'],
+      CD: ['C','D'],
+      UB: ['U','B'],
+    };
+
+    // 동률(2:2)일 때 따를 대표 문항
+    const TIEBREAKER = { DI:'Q1', FT:'Q5', CD:'Q9', UB:'Q13' };
 
     // ===== State =====
     let answers = {};
@@ -240,6 +310,7 @@
       QUESTIONS.forEach((q, i) => {
         const div = document.createElement('div');
         div.className = 'rounded-xl border p-4 bg-white';
+
         const t = document.createElement('div');
         t.className = 'font-medium mb-2';
         t.textContent = `${i+1}. ${q.title}`;
@@ -247,8 +318,9 @@
 
         q.options.forEach(opt => {
           const b = document.createElement('button');
-          b.className = 'block w-full text-left border rounded-lg p-3 mb-2 transition hover:bg-slate-300 ' +
-                        (answers[q.id]===opt.key ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-200');
+          b.className =
+            'block w-full text-left border rounded-lg p-3 mb-2 transition hover:bg-slate-50 ' +
+            (answers[q.id]===opt.key ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-200');
           b.textContent = opt.label;
           b.onclick = () => {
             answers[q.id] = opt.key;
@@ -257,6 +329,7 @@
           };
           div.appendChild(b);
         });
+
         quizEl.appendChild(div);
       });
     }
@@ -273,23 +346,25 @@
       submitBtnFixed.disabled = submitBtn.disabled;
     }
 
-    function computeAxis(){
-      const groups = {
-        DI: { keys:['Q1','Q2'], values:['D','I'] },
-        FT: { keys:['Q3','Q4'], values:['F','T'] },
-        CD: { keys:['Q5','Q6'], values:['C','D'] },
-        UB: { keys:['Q7','Q8'], values:['U','B'] },
-      };
-      const res = {};
-      for (const axis of AXIS_ORDER){
-        const {keys, values} = groups[axis];
-        const a = values[0], b = values[1];
-        const first = answers[keys[0]], second = answers[keys[1]];
-        const ac = (first===a) + (second===a);
-        const bc = (first===b) + (second===b);
-        res[axis] = (ac===bc) ? (answers[TIEBREAKER[axis]]||'') : (ac>bc ? a : b);
+    function computeAxis16(){
+      const axis = {};
+      for (const k of AXIS_ORDER){
+        const [a, b] = AXIS_VALUES[k];
+        const qs = AXIS_QUESTIONS[k];
+
+        let ac = 0, bc = 0;
+        for (const qid of qs){
+          if (answers[qid] === a) ac++;
+          if (answers[qid] === b) bc++;
+        }
+
+        if (ac === bc) {
+          axis[k] = answers[TIEBREAKER[k]] || a;
+        } else {
+          axis[k] = ac > bc ? a : b;
+        }
       }
-      return res;
+      return axis;
     }
 
     function showStartBar() {
@@ -305,13 +380,13 @@
       submitBar.classList.add('hidden');
     }
 
-    // 이미지 존재 확인 후 세팅
+    // 이미지 존재 확인 후 세팅 (imgs/DFCU.webp|png|jpg...)
     function canLoad(src) {
       return new Promise(resolve => {
         const img = new Image();
         img.onload = () => resolve(true);
         img.onerror = () => resolve(false);
-        img.src = src + (src.includes('?') ? '&' : '?') + `v=${Date.now()}`; // 캐시 회피
+        img.src = src + (src.includes('?') ? '&' : '?') + `v=${Date.now()}`;
       });
     }
     async function setTypeImage(code) {
@@ -329,72 +404,65 @@
       resultImg.classList.add('hidden');
     }
 
-  // === Google Sheet 전송 함수 ===
-  async function sendResultToSheet(nickname, code, axisObj) {
-    try {
-      await fetch('https://script.google.com/macros/s/AKfycbyo42fHChz3_ICD_eS2dENELTIWhbqyZRnVGV0aVl9P1rLqSRy228arPp-AIxdPWo9Qxg/exec', {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          nickname,
-          code,
-          name: TYPE_MAP[code]?.name || '',
-          axis: axisObj
-        })
-      });
-    } catch (e) {
-      console.error('전송 실패:', e);
-    }
-  }
-
-  // === showResult 함수 ===
-  async function showResult(code, nickname, axisObj) {
-    const t = TYPE_MAP[code] || {
-      name: '미정',
-      desc: '유형을 찾을 수 없습니다.',
-      tagline: '',
-      workWith: '',
-      strength: [],
-      weakness: ''
-    };
-
-    // 기본 정보 표시
-    nicknameDisplay.textContent = `${nickname}님은 ${t.name}!`;
-    resultCode.textContent = code;
-    resultName.textContent = t.name;
-    resultDesc.textContent = t.desc;
-    resultTagline.textContent = t.tagline || '—';
-    resultWorkWith.textContent = t.workWith || '—';
-    resultStrength.innerHTML = (t.strength || []).map(s => `<li>${s}</li>`).join('');
-    resultWeakness.textContent = t.weakness || '—';
-
-    // 축별 표시
-    if (axisObj) {
-      axisDI.textContent = axisObj.DI || '-';
-      axisFT.textContent = axisObj.FT || '-';
-      axisCD.textContent = axisObj.CD || '-';
-      axisUB.textContent = axisObj.UB || '-';
+    // (선택) 구글시트 전송 - 필요 없으면 이 함수/호출 제거
+    async function sendResultToSheet(nickname, code, axisObj) {
+      // NOTE: 배포(HTTP/HTTPS) 환경에서 동작하는 게 일반적입니다.
+      // Apps Script는 CORS 제약이 있으니 mode:'no-cors'면 응답 확인이 불가합니다.
+      try {
+        await fetch('https://script.google.com/macros/s/AKfycbyo42fHChz3_ICD_eS2dENELTIWhbqyZRnVGV0aVl9P1rLqSRy228arPp-AIxdPWo9Qxg/exec', {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            nickname,
+            code,
+            typeName: TYPE_MAP[code]?.name || '',
+            axis: axisObj || null,
+            userAgent: navigator.userAgent,
+            ts: new Date().toISOString()
+          })
+        });
+      } catch (e) {
+        console.error('전송 실패:', e);
+      }
     }
 
-    // 유형 이미지 로딩
-    await setTypeImage(code);
+    // 결과 표시
+    async function showResult(code, nickname, axisObj){
+      const t = TYPE_MAP[code] || {name:'미정',desc:'유형을 찾을 수 없습니다.',tagline:'',workWith:'',strength:[],weakness:''};
+      nicknameDisplay.textContent = `${nickname}님은 ${t.name}!`;
+      resultCode.textContent = code;
+      resultName.textContent = t.name;
+      resultDesc.textContent = t.desc;
+      resultTagline.textContent = t.tagline || '—';
+      resultWorkWith.textContent = t.workWith || '—';
+      resultStrength.innerHTML = (t.strength||[]).map(s=>`<li>${s}</li>`).join('');
+      resultWeakness.textContent = t.weakness || '—';
 
-    // 결과 화면 전환
-    quizSection.classList.add('hidden');
-    resultSection.classList.remove('hidden');
-    hideAllBars(); // 결과 화면에서는 바 숨김
+      if(axisObj){
+        axisDI.textContent = axisObj.DI || '-';
+        axisFT.textContent = axisObj.FT || '-';
+        axisCD.textContent = axisObj.CD || '-';
+        axisUB.textContent = axisObj.UB || '-';
+      } else {
+        axisDI.textContent = axisFT.textContent = axisCD.textContent = axisUB.textContent = '-';
+      }
 
-    // URL 딥링크 반영
-    const url = new URL(location.href);
-    url.searchParams.set('name', nickname);
-    url.searchParams.set('code', code);
-    history.replaceState(null, '', url.toString());
+      await setTypeImage(code);
 
-    // === Google Sheet에 결과 저장 ===
-    await sendResultToSheet(nickname, code, axisObj);
-  }
+      quizSection.classList.add('hidden');
+      resultSection.classList.remove('hidden');
+      hideAllBars();
 
+      // URL 딥링크
+      const url = new URL(location.href);
+      url.searchParams.set('name', nickname);
+      url.searchParams.set('code', code);
+      history.replaceState(null, '', url.toString());
+
+      // (선택) 구글시트 전송
+      await sendResultToSheet(nickname, code, axisObj);
+    }
 
     function resetAll(){
       answers = {};
@@ -413,7 +481,7 @@
 
     // ===== Init (딥링크 지원) =====
     (async function init(){
-      // 인라인 버튼은 화면에서 감춤 (기능/접근성은 유지)
+      // 인라인 버튼은 숨기고 fixed bar를 기본 UX로 사용
       startBtn.classList.add('hidden');
       submitBtn.classList.add('hidden');
 
@@ -427,7 +495,7 @@
         await showResult(codeFromURL, nameFromURL, null);
         hideAllBars();
       } else {
-        showStartBar(); // 기본: 시작 바 노출
+        showStartBar();
       }
     })();
 
@@ -439,16 +507,14 @@
       quizSection.classList.remove('hidden');
       renderQuestions();
       updateProgress();
-      showSubmitBar(); // 퀴즈 시작하면 제출 고정바
+      showSubmitBar();
       window.scrollTo({ top: quizSection.offsetTop - 8, behavior: 'smooth' });
     };
-
-    // fixed 버튼은 기존 로직 재사용
-    startBtnFixed.onclick  = () => startBtn.click();
+    startBtnFixed.onclick = () => startBtn.click();
 
     submitBtn.onclick = async () => {
       if (submitBtn.disabled) return;
-      const axis = computeAxis();
+      const axis = computeAxis16();
       const code = AXIS_ORDER.map(k => axis[k] || '-').join('');
       const nick = (nicknameInput.value || '').trim();
       await showResult(code, nick, axis);
@@ -462,7 +528,7 @@
       const url = new URL(location.href).toString();
       try {
         if (navigator.share) {
-          await navigator.share({ title: 'PM 유형 테스트', text: `${resultCode.textContent} - ${resultName.textContent}`, url });
+          await navigator.share({ title: 'PMTI — PM 업무 스타일 테스트', text: `${resultCode.textContent} - ${resultName.textContent}`, url });
         } else {
           await navigator.clipboard.writeText(url);
           alert('링크를 복사했습니다!');
@@ -472,12 +538,14 @@
 
     copyBtn.onclick = async () => {
       const text = [
-        `내 PM 유형: ${resultCode.textContent} – ${resultName.textContent}`,
+        `내 PMTI 유형: ${resultCode.textContent} – ${resultName.textContent}`,
         resultDesc.textContent,
         resultTagline.textContent ? `한 마디로: ${resultTagline.textContent}` : '',
         resultWorkWith.textContent ? `동료는 나를: ${resultWorkWith.textContent}` : '',
         '장점: ' + Array.from(resultStrength.querySelectorAll('li')).map(li=>li.textContent).join(' / '),
-        '주의: ' + resultWeakness.textContent
+        '주의: ' + resultWeakness.textContent,
+        '',
+        '(PMTI) 16문항 · Data/Intuition · Fast/Thoughtful · Cooperative/Driving · User/Business'
       ].filter(Boolean).join('\n');
       try {
         await navigator.clipboard.writeText(text);
