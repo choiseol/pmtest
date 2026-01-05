@@ -319,7 +319,7 @@
         q.options.forEach(opt => {
           const b = document.createElement('button');
           b.className =
-            'block w-full text-left border rounded-lg p-3 mb-2 transition hover:bg-slate-50 ' +
+            'block w-full text-left border rounded-lg p-3 mb-2 transition hover:bg-blue-950 ' +
             (answers[q.id]===opt.key ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-200');
           b.textContent = opt.label;
           b.onclick = () => {
